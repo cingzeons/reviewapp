@@ -4,13 +4,12 @@ import shops from "./shops";
 import orders from "./orders";
 import comments from "./comments";
 
-// 合并领域状态(引入的模块进行合并)
+//合并领域状态
 const rootReducer = combineReducers({
-    products,
-    shops,
-    orders,
-    comments
-});
+  products,
+  shops,
+  orders,
+  comments
+})
 
-export default rootReducer;
-
+export default rootReducer

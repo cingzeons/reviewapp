@@ -1,18 +1,16 @@
 import { combineReducers } from "redux";
 import entities from "./entities";
-import app from "./app";
 import home from "./home";
 import detail from "./detail";
+import app from "./app";
 
-/**
- * 合并成根 reducer
- * @type {Reducer<any>}
- */
-const rootReducers = combineReducers({
-    entities,
-    home,
-    detail,
-    app
-});
 
-export default rootReducers;
+//合并成根reducer
+const rootReducer = combineReducers({
+  entities,
+  home,
+  detail,
+  app
+})
+
+export default rootReducer

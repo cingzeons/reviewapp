@@ -1,30 +1,29 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import { bindActionCreators } from "redux";
+import { BrowserRouter as Router, Route, Switch} from "react-router-dom"
 import { connect } from "react-redux";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import ErrorToast from "../../components/ErrotToast";
+import ErrorToast from "../../components/ErrorToast";
 import { actions as appActions, getError } from "../../redux/modules/app";
+import Home from '../Home'
+import ProductDetail from '../ProductDetail'
 
-import Home from "../Home";
-
-// react-slick 样式
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 
 class App extends Component {
-  render(){
-    const { error, appActions:{clearError} } = this.props;
+  render() {
+    const {
+      error,
+      appActions: { clearError }
+    } = this.props;
     return (
-        <div className="App">
-          <Router>
-            <Switch>
-              <Route path="/" component={Home} />
-            </Switch>
-          </Router>
-          {
-            error ? <ErrorToast msg={error} clearError={clearError} /> : null
-          }
-        </div>
+      <div className="App">
+        <Router>
+          <Switch>
+            <Route path="/detail/:id" component={ProductDetail} />
+            <Route path="/" component={Home} />
+          </Switch>
+        </Router>  
+        {error ? <ErrorToast msg={error} clearError={clearError} /> : null}
+      </div>
     );
   }
 }
@@ -32,17 +31,16 @@ class App extends Component {
 const mapStateToProps = (state, props) => {
   return {
     error: getError(state)
-  }
+  };
 };
 
-const mapDispatchToProps =(dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     appActions: bindActionCreators(appActions, dispatch)
-  }
+  };
 };
 
-
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(App);
