@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import dataSource from "./dataSource";
 import LikeItem from "../LikeItem";
 import Loading from "../../../../components/Loading";
 import "./style.css";
@@ -10,22 +9,26 @@ class LikeList extends Component {
         // 创建 ref 属性
         this.myRef = React.createRef();
 
-        this.state = {
-            data:dataSource,
-            loadTimes: 1
-        };
-
         this.removeListener = false;
     }
 
 
     componentDidMount(){
-        // 滚动事件
-        document.addEventListener("scroll", this.handleScroll);
+        if(this.props.pageCount < 3){
+            // 滚动事件
+            document.addEventListener("scroll", this.handleScroll);
+        }else{
+            this.removeListener = true;
+        }
+
+        // 获取首屏数据
+        if(this.props.pageCount === 0){
+            this.props.fetchData();
+        }
     }
 
     componentDidUpdate(){
-        if(this.state.loadTimes >= 3 && !this.removeListener){
+        if(this.props.pageCount >= 3 && !this.removeListener){
             document.removeEventListener("scroll", this.handleScroll);
             this.removeListener = true;
         }
@@ -57,20 +60,13 @@ class LikeList extends Component {
          * 整个页面，可视区域的最底部，那这时候，我们就要去加载更多的数据
          */
         if(scrollTop >= likeListheight + likeListTop - screenHeight){
-            const newData = this.state.data.concat(dataSource);
-            const newLoadTimes = this.state.loadTimes + 1;
-            setTimeout(() => {
-                this.setState({
-                    data: newData,
-                    loadTimes: newLoadTimes,
-                });
-            }, 1000);
+            this.props.fetchData();
         }
     }
 
 
     render() {
-        const {data, loadTimes} = this.state;
+        const {data, pageCount} = this.props;
         return (
             <div ref={this.myRef} className="likeList">
                 <div className="likeList__header">猜你喜欢</div>
@@ -84,10 +80,10 @@ class LikeList extends Component {
                     }
                 </div>
                 {
-                    loadTimes < 3 ? (
+                    pageCount < 3 ? (
                         <Loading />
                     ) : (
-                        <a className="likeList__viewAll">查看更多</a>
+                        <span className="likeList__viewAll">查看更多</span>
                     )
                 }
             </div>

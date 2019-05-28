@@ -24,7 +24,6 @@ export const types = {
     FETCH_DISCOUNTS_FAILURE: "HOME/FETCH_DISCOUNTS_FAILURE", // 获取超值特惠请求 失败
 };
 
-// zeon 吉恩
 
 const initialState = {
     likes: {
@@ -46,7 +45,7 @@ export const actions = {
     // 加载猜你喜欢的数据
     loadLikes: () => {
         return (dispatch, getState) => {
-            const { pageCount } = getState().home.linkes;
+            const { pageCount } = getState().home.likes;
             const rowIndex = pageCount * params.PAGE_SIZE_LIKES;
             const endpoint = url.getProductList(params.PAGE_SIZE_LIKES,  rowIndex, params.PAGE_SIZE_LIKES);
             return dispatch(fetchLikes(endpoint));
@@ -55,6 +54,11 @@ export const actions = {
     // 加载特惠商品
     loadDiscounts: () => {
         return (dispatch, getState) => {
+            const { ids } = getState().home.discounts;
+
+            if(ids.length > 0){
+                return null;
+            }
 
             const endpoint = url.getProductList(params.PAGE_SIZE_DISCOUNTS, 0, params.PAGE_SIZE_DISCOUNTS);
             return dispatch(fetchDiscounts(endpoint));
@@ -62,7 +66,7 @@ export const actions = {
     }
 };
 
-const fetchLikes = (endpoint, params) => ({
+const fetchLikes = (endpoint) => ({
     [FETCH_DATA]: {
         types: [
             types.FETCH_LINKES_REQUEST,
@@ -75,7 +79,7 @@ const fetchLikes = (endpoint, params) => ({
 });
 
 
-const fetchDiscounts = (endpoint, params) => ({
+const fetchDiscounts = (endpoint) => ({
     [FETCH_DATA]: {
         types: [
             types.FETCH_DISCOUNTS_REQUEST,
@@ -88,18 +92,6 @@ const fetchDiscounts = (endpoint, params) => ({
 });
 
 
-/*const fetchLinkesRequest = () => ({
-    type: types.FETCH_LINKES_FAILURE
-});
-const fetchLinkesSuccess = (data) => ({
-    type: types.FETCH_LINKES_SUCCESS,
-    data,
-});
-const fetchLinkesFailuret = (error) => ({
-    type: types.FETCH_LINKES_FAILURE,
-    error,
-});*/
-
 
 /**
  * 猜你喜欢 reducer
@@ -107,7 +99,7 @@ const fetchLinkesFailuret = (error) => ({
  * @param action
  * @returns {*}
  */
-const likes = (state= initialState.linkes, action) => {
+const likes = (state= initialState.likes, action) => {
     switch(action.type){
         case types.FETCH_LINKES_REQUEST:
             return {...state, isFetching: true};
@@ -146,7 +138,40 @@ const discounts = (state= initialState.discounts, action) => {
  */
 const reducer = combineReducers({
     discounts,
-    likes,
+    likes
 });
 
 export default reducer;
+
+
+/**
+ * 定义 selectors
+ * 获取猜你喜欢state
+ * @param state
+ * @returns {*[]}
+ */
+export const getLikes = state => {
+    return state.home.likes.ids.map(id => {
+        return state.entities.products[id];
+    });
+};
+/**
+ * 获取特惠商品state
+ * @param state
+ * @returns {*[]}
+ */
+export const getDiscounts = state => {
+    return state.home.discounts.ids.map(id => {
+        return state.entities.products[id];
+    });
+};
+
+
+/**
+ * 猜你喜欢当前分页码
+ * @param state
+ * @returns {number}
+ */
+export const getPageCountOfLikes = state => {
+    return state.home.likes.pageCount
+};
